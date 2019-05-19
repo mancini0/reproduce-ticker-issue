@@ -4,7 +4,7 @@ class PriceTicker extends React.Component {
 
     constructor(props) {
         super(props)
-        this.state = { price: undefined, arrow: undefined }
+        this.state = { price: undefined, arrow: undefined, tickClass:'waiting' }
     }
 
     static getDerivedStateFromProps(newProps, oldState) {
@@ -13,20 +13,28 @@ class PriceTicker extends React.Component {
             const downArrow = '\u21E9'
             const change = (newProps.price-oldState.price).toFixed(2)
             if (newProps.price > oldState.price) {
-                return { price: newProps.price, arrow: upArrow, bgColor: 'green', change}
+                return { price: newProps.price, arrow: upArrow, bgColor: 'green', change, tickClass:'fadeout'}
             }
             else {
-                return { price: newProps.price, arrow: downArrow, bgColor: 'red', change }
+                return { price: newProps.price, arrow: downArrow, bgColor: 'red', change, tickClass:'fadeout' }
             }
         }
-        return { price: newProps.price, arrow: undefined, tickClass: undefined, change:undefined}
+        return { price: newProps.price, arrow: undefined, tickClass: 'waiting', change:undefined}
     }
+
+    componentDidUpdate(prevProps, prevState, snapshot){
+        if(this.state.tickClass === 'fadeout'){
+            setTimeout(()=>this.setState({tickClass:'waiting'}),2000)
+        }
+    }
+
+
 
     render(props) {
         return (
             <div>
                 {this.state.arrow &&
-                    <span className='fadeout' style={{
+                    <span className={this.state.tickClass} style={{
                         backgroundColor: this.state.bgColor,
                     }}>{this.state.arrow} {this.state.change}</span>
 
